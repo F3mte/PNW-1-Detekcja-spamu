@@ -9,6 +9,8 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, confusion_matrix , classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import KNeighborsClassifier
+import xgboost as xgb
 ################################
 desired_width=42069
 pd.set_option('display.width', desired_width)
@@ -20,14 +22,12 @@ data = pd.read_csv("enron_spam_data.csv")
 print(data.head)
 data["Messages"] = data["Subject"] + data["Message"]
 data = data.drop("Message",axis=1)
-data = data.drop("Message ID",axis=1) #useless
+data = data.drop("Message ID",axis=1)
 # print(data.head)
 
-#male literki wszedzie, ale chyba i tak wszedzie sa male, ale na wszelki wypadek
 data['Messages'] = data['Messages'].str.lower()
 data['Subject'] = data['Subject'].str.lower()
 
-#usuwanie interpunkcji, inaczej nie umiem XDDDDD, bo nie dziala
 data["Messages"] = [str(x).replace(':',' ') for x in data["Messages"]]
 data["Messages"] = [str(x).replace(',',' ') for x in data["Messages"]]
 data["Messages"] = [str(x).replace('.',' ') for x in data["Messages"]]
@@ -45,11 +45,12 @@ for line in data["Messages"]:
     words = line.split(" ")
     Text.append(words)
 
-X_train, X_test , y_train, y_test = train_test_split(data["Messages"], data["Spam/Ham"] , test_size=0.5)
+X_train, X_test , y_train, y_test = train_test_split(data["Messages"], data["Spam/Ham"] , test_size=0.9)
 # Vectorizer = CountVectorizer()
 Vectorizer = TfidfVectorizer()
 count= Vectorizer.fit_transform(X_train.values)
 Spam_detection = MultinomialNB()
+# Spam_detection = xgb.XGBClassifier()
 targets = y_train.values
 Spam_detection.fit(count, targets)
 y_predict = Spam_detection.predict(Vectorizer.transform(X_test))
