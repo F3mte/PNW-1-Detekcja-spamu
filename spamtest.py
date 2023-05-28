@@ -45,12 +45,11 @@ for line in data["Messages"]:
     words = line.split(" ")
     Text.append(words)
 
-X_train, X_test , y_train, y_test = train_test_split(data["Messages"], data["Spam/Ham"] , test_size=0.9)
+X_train, X_test , y_train, y_test = train_test_split(data["Messages"], data["Spam/Ham"] , test_size=0.5)
 # Vectorizer = CountVectorizer()
 Vectorizer = TfidfVectorizer()
 count= Vectorizer.fit_transform(X_train.values)
 Spam_detection = MultinomialNB()
-# Spam_detection = xgb.XGBClassifier()
 targets = y_train.values
 Spam_detection.fit(count, targets)
 y_predict = Spam_detection.predict(Vectorizer.transform(X_test))
