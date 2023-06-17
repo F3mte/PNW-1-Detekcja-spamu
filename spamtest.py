@@ -1,8 +1,12 @@
 import numpy as np
+from numpy import mean
+from numpy import std
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
+from sklearn.model_selection import RepeatedKFold
+from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -53,7 +57,14 @@ Spam_detection = MultinomialNB()
 targets = y_train.values
 Spam_detection.fit(count, targets)
 y_predict = Spam_detection.predict(Vectorizer.transform(X_test))
-print(accuracy_score(y_test, y_predict))
+print(accuracy_score(y_test, y_predict)) # chyba juz tego nie potrzebujemy?
+# 10 krotna walidacja, 5 powtorzen, wynik nieznacznie mniejszy niż przy jednokrotnej
+rkf = RepeatedKFold(n_splits=10, n_repeats=5, random_state=2652124)
+scores = cross_val_score(Spam_detection, count, targets, scoring='accuracy', cv=rkf, n_jobs=-1)
+# wyniki dla kazdej proby
+print(scores)
+# usrednione wyniki
+print('Accuracy: %.3f (%.3f)' % (mean(scores), std(scores)))
 
 cm = confusion_matrix(y_test,y_predict)
 sns.heatmap(cm, annot = True, fmt = 'd')
