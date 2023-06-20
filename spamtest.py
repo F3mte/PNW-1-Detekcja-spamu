@@ -74,15 +74,18 @@ gb = GradientBoostingClassifier()
 gb.fit(count, targets)
 y_predict_gb = gb.predict(Vectorizer.transform(X_test))
 
-print(accuracy_score(y_test, y_predict)) # chyba juz tego nie potrzebujemy?
+#print(accuracy_score(y_test, y_predict)) # chyba juz tego nie potrzebujemy?
 # 10 krotna walidacja, 5 powtorzen, wynik nieznacznie mniejszy niż przy jednokrotnej
 rkf = RepeatedKFold(n_splits=10, n_repeats=5, random_state=2652124)
 scores = cross_val_score(Spam_detection, count, targets, scoring='accuracy', cv=rkf, n_jobs=-1)
 knn_scores = cross_val_score(knn, count, targets, scoring='accuracy', cv=rkf, n_jobs=-1)
 rf_scores = cross_val_score(rf, count, targets, scoring='accuracy', cv=rkf, n_jobs=-1)
 gb_scores = cross_val_score(gb, count, targets, scoring='accuracy', cv=rkf, n_jobs=-1)
-# wyniki dla kazdej proby
-print(scores)
+# wyniki dla kazdego modelu
+print(f"Naive Bayes all scores: {scores}")
+print(f"KN all scores: {knn_scores}")
+print(f"Random Fores all scores: {rf_scores}")
+print(f"Gradient Boosting all scores: {gb_scores}")
 # usrednione wyniki
 print('Naive Bayes Accuracy: %.3f (%.3f)' % (mean(scores), std(scores)))
 print('K-Nearest Neighbors Accuracy: %.3f (%.3f)' % (mean(knn_scores), std(knn_scores)))
